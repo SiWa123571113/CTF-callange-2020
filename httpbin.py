@@ -44,13 +44,16 @@ size = os.get_terminal_size()
 
 def handler(conn,addr,args):
     try:
-        address = " {}:{} ".format(addr[0], addr[1])
-        logging.debug("="*8 + address + "="*(size[0]-8-len(address)))
-        logging.debug(basic.recvall(conn).decode("utf-8"))
+        msg = basic.recvall(conn).decode("utf-8")
+        if len(msg) > 0:
+            address = " {}:{} ".format(addr[0], addr[1])
+            logging.debug("="*8 + address + "="*(size[0]-8-len(address)))
+            logging.debug(msg)
+            logging.debug(datetime.datetime.now())
         conn.sendall(b"HTTP/1.0 404 Not Found\r\nContent-Encoding: utf-8\r\nContent-Type: text/html\r\nContent-Length: 0\r\n\r\n")
-        logging.debug(datetime.datetime.now())
     except Exception as E:
-        print(E)
+        logging.debug("="*8 + address + "="*(size[0]-8-len(address)))
+        logging.error(str(E))
     
 server = basic.Server(sys.argv[1], int(sys.argv[2]))
 server.deamon = True
